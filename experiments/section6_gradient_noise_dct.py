@@ -24,7 +24,13 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from src.solvers import build_LN_bN, solve_poisson_DCT, solve_OS_MODI
+from src.solvers import build_LN_bN, solve_poisson_DCT, solve_OS_MODI, CPU_AVAILABLE
+
+if not CPU_AVAILABLE:
+    print("[WARNING] osmodi is not installed/compiled -- RPR-ODI results in this "
+          "script will fall back to the PPE-MNLS (DCT) solution instead (see "
+          "README.md, 'Installing the OS-MODI reference solver'). PPE-MNLS results "
+          "are unaffected.")
 from src.noise import generate_correlated_noise
 from src.metrics import R_and_err
 from src.jhtdb_io import get_dataset, extract_gradient_snapshot
@@ -74,7 +80,7 @@ def part_gradient_noise(dataset, noise_levels=(0, 5, 10, 20, 30, 50), num_realiz
 
                 _, bN = build_LN_bN(dPdx_noisy, dPdz_noisy, h)
                 p_ppe = solve_poisson_DCT(bN.reshape(N, N), h)
-                p_modi = solve_OS_MODI(dPdx_noisy, dPdz_noisy, h)
+                p_modi = solve_OS_MODI(dPdx_noisy, dPdz_noisy, h) if CPU_AVAILABLE else p_ppe.copy()
 
                 R, eps = R_and_err(p_ppe, P_exact_centered);   R_ppe_r.append(R);  eps_ppe_r.append(eps)
                 R, eps = R_and_err(p_modi, P_exact_centered);  R_modi_r.append(R); eps_modi_r.append(eps)

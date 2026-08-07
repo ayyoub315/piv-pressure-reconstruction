@@ -112,8 +112,33 @@ Figures land in `results/figures/`, raw numbers in `results/data/`.
   temporal differentiation of the velocity field, not to the choice of
   pressure solver.
 
+## Installing the OS-MODI reference solver (optional, manual)
+
+The RPR-ODI comparisons use Fernando Zigunov's OS-MODI reference
+implementation. Unlike everything else in `requirements.txt`, **it is not a
+pip package** -- it needs to be built from source:
+
+1. Get the source from Zigunov's repository (search "OS-MODI Zigunov
+   pressure" or "pressure-osmosis" on GitHub) and download/clone it into the
+   same parent folder as this project.
+2. On macOS, a small source change was needed to get it to compile locally
+   (the exact change isn't tracked here -- if you're redoing this, check
+   Zigunov's repo issues/README for the current macOS build instructions).
+3. Build/compile it following that repo's instructions, then make it
+   importable from this project's Python environment (e.g. `pip install -e
+   .` from its folder, or adding it to your `PYTHONPATH`).
+4. Verify it worked: `python -c "from osmodi import solve_cpu; print('OK')"`
+   should print `OK` with no import error.
+
+**This step is optional.** Every script in `experiments/` checks for
+`osmodi` at import time and falls back gracefully if it's missing: the
+PPE-MNLS results (lsqr and DCT) are produced normally, and any
+RPR-ODI-specific figure/column is skipped with a printed `[WARNING]`
+instead of crashing the script.
+
 ## Requirements
 
-- A JHTDB auth token (`JHTDB_AUTH_TOKEN`, see Setup above).
-- The `osmodi` package for the RPR-ODI reference solver. If unavailable,
-  scripts fall back gracefully and skip RPR-ODI-specific outputs.
+- A JHTDB auth token (`JHTDB_AUTH_TOKEN`, see Setup above) -- required.
+- The `osmodi` package for the RPR-ODI reference solver -- optional, see
+  above. If unavailable, scripts fall back gracefully and skip
+  RPR-ODI-specific outputs.

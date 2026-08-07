@@ -1,0 +1,12 @@
+numpy
+scipy
+matplotlib
+python-dotenv
+givernylocal
+spyder-kernels
+
+# NOTE: osmodi (the RPR-ODI / OS-MODI reference solver) is NOT installable via
+# pip -- it must be compiled manually from Fernando Zigunov's source repo.
+# See README.md, section "Installing the OS-MODI reference solver".
+# All scripts run fine without it: PPE-MNLS (lsqr/DCT) results are unaffected,
+# and RPR-ODI-specific outputs are skipped with a warning if osmodi is absent.

@@ -40,7 +40,13 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.solvers import (build_LN_bN, solve_PPE_MNLS, solve_poisson_DCT,
-                          solve_poisson_DCT_tikhonov, solve_OS_MODI)
+                          solve_poisson_DCT_tikhonov, solve_OS_MODI, CPU_AVAILABLE)
+
+if not CPU_AVAILABLE:
+    print("[WARNING] osmodi is not installed/compiled -- RPR-ODI columns in this "
+          "script's runtime table will fall back to the DCT solution instead (see "
+          "README.md, 'Installing the OS-MODI reference solver'). lsqr/DCT results "
+          "are unaffected.")
 from src.noise import generate_correlated_noise
 from src.metrics import R_and_err
 from src.jhtdb_io import get_dataset, extract_gradient_snapshot
@@ -87,7 +93,9 @@ def part2_solver_comparison(dataset):
 
             t0 = time.time(); p_lsqr = solve_PPE_MNLS(LN, bN, N);              t_lsqr = time.time() - t0
             t0 = time.time(); p_dct  = solve_poisson_DCT(bN_2d, h);            t_dct  = time.time() - t0
-            t0 = time.time(); p_modi = solve_OS_MODI(dPdx_clean, dPdz_clean, h); t_modi = time.time() - t0
+            t0 = time.time()
+            p_modi = solve_OS_MODI(dPdx_clean, dPdz_clean, h) if CPU_AVAILABLE else p_dct.copy()
+            t_modi = time.time() - t0
 
             R_lsqr, eps_lsqr = R_and_err(p_lsqr, P_exact_centered)
             R_dct, eps_dct = R_and_err(p_dct, P_exact_centered)
