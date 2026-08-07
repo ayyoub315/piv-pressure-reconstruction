@@ -1,0 +1,13 @@
+name: piv-pressure-reconstruction
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy
+  - scipy
+  - matplotlib
+  - pip
+  - pip:
+      - givernylocal   # JHTDB client
+      - osmodi         # RPR-ODI / OS-MODI reference solver (Zigunov & Charonko)
+      - python-dotenv  # loads .env for JHTDB_AUTH_TOKEN
