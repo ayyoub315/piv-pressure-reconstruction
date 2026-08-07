@@ -24,7 +24,12 @@ def laplacian_nonperiodic(f, h):
     """2D Laplacian with second-order one-sided schemes at the boundaries
     (non-periodic, matches JHTDB's finite plane extraction)."""
     lap = np.zeros_like(f)
+    # Interior: standard second-order centered 3-point stencil.
     lap[1:-1, :] += (f[2:, :] - 2 * f[1:-1, :] + f[:-2, :]) / h**2
+    # Boundaries: no neighbor on one side, so a centered stencil isn't
+    # available. Use a one-sided, second-order-accurate 4-point stencil
+    # instead (coefficients 2, -5, 4, -1), applied along each axis
+    # independently at its own edge.
     lap[0, :]    += (2 * f[0, :] - 5 * f[1, :] + 4 * f[2, :] - f[3, :]) / h**2
     lap[-1, :]   += (2 * f[-1, :] - 5 * f[-2, :] + 4 * f[-3, :] - f[-4, :]) / h**2
     lap[:, 1:-1] += (f[:, 2:] - 2 * f[:, 1:-1] + f[:, :-2]) / h**2
